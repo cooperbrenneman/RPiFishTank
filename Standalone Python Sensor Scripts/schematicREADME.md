@@ -7,9 +7,7 @@ Copy these files, open a virtual environment, and execute the file using:
 
 ```python  getTempOnButtonPress.py```
 
-To exit the program, for now just press the below keys when in the console:
-
-```ctrl+c```
+To exit the program, for now just press the below keys when in the console: ctrl+c
 
 ## Schematics and Files
 Schematics and Fritzing files are available for each program. Please ensure you wire up everything correctly before turning on/connecting the Raspberry Pi. Double check everything before turning it on, as you could potentially break the Raspberry Pi and/or sensor if connected incorrectly.
