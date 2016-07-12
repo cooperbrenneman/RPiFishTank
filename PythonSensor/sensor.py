@@ -8,6 +8,7 @@ import iothub_client
 import iothub_client
 from iothub_client import *
 from iothub_client_args import *
+import SensorClass
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -46,8 +47,10 @@ class ProducerThread(Thread):
     def run(self):
         nums = range(5)
         global queue, numItems
+        sensorTest = SensorClass.Sensor('test','AM2302',4)
         while numItems > 0:
-            num = random.choice(nums)
+            num = sensorTest.readData()
+            #num = random.choice(nums)
             msg_txt_formatted = msg_txt % (
                     avg_wind_speed + (random.random() * 4 + 2))
             queue.put(num)
