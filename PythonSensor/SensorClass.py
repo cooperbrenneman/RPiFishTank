@@ -58,7 +58,7 @@ class Sensor:
 #    print(tempSensor.readData())
 
 # Code for test sensor
-#sensorTest = Sensor('test','DHT22',3)
+#sensorTest = Sensor('test','AM2302',4)
 #for i in range(0,5):
 #    print(sensorTest.readData())
 #    time.sleep(1)

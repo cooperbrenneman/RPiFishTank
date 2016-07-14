@@ -9,6 +9,9 @@ import iothub_client
 from iothub_client import *
 from iothub_client_args import *
 import SensorClass
+import WaterSensorClass
+import w1thermsensor
+import os
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -47,12 +50,16 @@ class ProducerThread(Thread):
     def run(self):
         nums = range(5)
         global queue, numItems
-        sensorTest = SensorClass.Sensor('test','AM2302',4)
+        # For temperature and humidity sensor
+        #sensorTest = SensorClass.Sensor('test','AM2302',4)
+        # For water temperature sensor
+        waterSensor = WaterSensorClass.WaterSensor("DS18B20", "00152213a7ee")
         while numItems > 0:
-            num = sensorTest.readData()
-            #num = random.choice(nums)
-            msg_txt_formatted = msg_txt % (
-                    avg_wind_speed + (random.random() * 4 + 2))
+            # For temperature and humidity sensor
+            #num = sensorTest.readData()
+            # For water temperature sensor
+            num = waterSensor.readData()
+            #msg_txt_formatted = msg_txt % (avg_wind_speed + (random.random() * 4 + 2))
             queue.put(num)
             print "Produced", num
             time.sleep(random.random())
