@@ -11,6 +11,8 @@ import iothub_client
 from iothub_client import *
 from iothub_client_args import *
 
+from RandomSensor import RandomSensor
+
 import json
 
 # HTTP options
@@ -55,15 +57,14 @@ class SensorProducer(Thread):
     def run(self):
         nums = range(5)
         global queue, numItems
+        # For temperature and humidity sensor
+        #sensorTest = SensorClass.Sensor('test','AM2302',4)
+        # For water temperature sensor
+        #waterSensor = WaterSensorClass.WaterSensor("DS18B20", "00152213a7ee")
         while numItems > 0:
+            message = self.sensor.read()
             
-            reading = self.sensor.read()
-            
-            message = {
-                "sensor_name": self.sensor.name,
-                "sensor_value": reading,
-                "queue_size": queue.qsize()+1
-            }
+            message["queue_size"] = queue.qsize()+1
             
             queue.put(message)
             print "Produced", json.dumps(message)
@@ -75,16 +76,15 @@ class SensorProducer(Thread):
 
 class IoTHubConsumer(Thread):
     
-    def __init__(self, sensor):
+    def __init__(self, hub_client):
         Thread.__init__(self)
         
-        self.sensor = sensor
         self.message_count = 0
+        self.hub_client = hub_client
         
-        self.sensor.hub_manager = HubManager(connection_string, protocol)
         print(
             "Starting the IoT Hub Python sample using protocol %s..." %
-            self.sensor.hub_manager.client_protocol)
+            self.hub_client.client_protocol)
     
     def run(self):
         global queue, numItems
@@ -97,7 +97,7 @@ class IoTHubConsumer(Thread):
             print "Consumed", message
             
             try:
-                self.sensor.hub_manager.send_event(message, {}, self.message_count)
+                self.hub_client.send_event(message, {}, self.message_count)
                 self.message_count += 1
             except IoTHubError as e:
                 print("Unexpected error %s from IoTHub" % e)
@@ -107,42 +107,6 @@ class IoTHubConsumer(Thread):
             
             time.sleep(random.random())
 
-
-class Sensor():
-    
-    def __init__(self, connection_string, protocol):
-        self.name = "Abstract Sensor"
-        
-        self.connection_string = connection_string
-        self.protocol = protocol
-        
-        self.hub_manager = HubManager(connection_string, protocol)
-        
-        self.producer = SensorProducer(self)
-        self.consumer = IoTHubConsumer(self)
-    
-    
-    def read(self):
-        raise NotImplemented
-        
-        
-    def start(self):
-        self.producer.start()
-        self.consumer.start()
-        
-        
-        
-class RandomSensor(Sensor):
-    def __init__(self, connection_string, protocol):
-        Sensor.__init__(self, connection_string, protocol)
-        
-        self.name = "Random Sensor"
-        
-        self.nums = range(100)
-        
-    def read(self):
-        return random.choice(self.nums)
-
 def main(connection_string, protocol):
     
     print("\nPython %s\n" % sys.version)
@@ -150,57 +114,17 @@ def main(connection_string, protocol):
     print("IoT Hub for Python SDK Version: %s\n" %
             iothub_client.__version__)
     
-    sensor = RandomSensor(connection_string, protocol)
+    hub_client = HubManager(connection_string, protocol)
+    sensor = RandomSensor()
+    
+    consumer = IoTHubConsumer(hub_client)
+    producer = SensorProducer(sensor)
+    
+    sensor.registerConsumer(consumer)
+    sensor.registerProducer(producer)
+    
     sensor.start()
     
-    '''SensorProducer().start()
-    IoTHubConsumer(connection_string, protocol).start()'''
-    
-    '''try:
-        print("\nPython %s\n" % sys.version)
-        print(
-            "IoT Hub for Python SDK Version: %s\n" %
-            iothub_client.__version__)
-
-        hub_manager = HubManager(connection_string, protocol)
-
-        print(
-            "Starting the IoT Hub Python sample using protocol %s..." %
-            hub_manager.client_protocol)
-
-
-        while True:
-            # send a few messages every minute
-            print("IoTHubClient sending %d messages" % message_count)
-
-            for i in range(0, message_count):
-                msg_txt_formatted = msg_txt % (
-                    avg_wind_speed + (random.random() * 4 + 2))
-                msg_properties = {
-                    "Property": "PropMsg_%d" % i
-                }
-                hub_manager.send_event(msg_txt_formatted, msg_properties, i)
-                print(
-                    "IoTHubClient.send_event_async accepted message [%d]"
-                    " for transmission to IoT Hub." %
-                    i)
-
-            # Wait for Commands or exit
-            print("IoTHubClient waiting for commands, press Ctrl-C to exit")
-
-            n = 0
-            while n < 1:
-                status = hub_manager.client.get_send_status()
-                print("Send status: %s" % status)
-                time.sleep(10)
-                n += 1
-
-    except IoTHubError as e:
-        print("Unexpected error %s from IoTHub" % e)
-        return
-    except KeyboardInterrupt:
-        print("IoTHubClient sample stopped")'''
-
 
 def usage():
     print("Usage: sensor.py -p <protocol> -c <connectionstring>")
