@@ -37,7 +37,7 @@ received_count = 0
 
 # String containing Hostname, Device Id & Device Key in the format:
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-connection_string = "HostName=aquariumstream.azure-devices.net;DeviceId=windowspythontest;SharedAccessKey=N4qipAx2G4v/J+vLMt6iIYNRvTk6xHLyxDrrU4wuTrI="
+connection_string = "HostName=aqengine.azure-devices.net;DeviceId=kellsdesktop;SharedAccessKey=q8bcqq9BgnjOf5bdTVFjP7MX/oV0RrALTqai6qQtkHI="
 
 # Queue(N), N represents the message buffer.  
 ## A higher buffer, means the sensor can continue to operate for longer if the event consumer falles behind.
