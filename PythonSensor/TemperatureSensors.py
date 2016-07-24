@@ -8,16 +8,12 @@ import w1thermsensor
 
 # Since Adafruit_DHT module is only available on Raspberry Pi, use strings on client for testing.
 try:
-    temperatureSensorsDict = {"DHT11": Adafruit_DHT.DHT11,
-                              "DHT22" : Adafruit_DHT.DHT22,
-                              "AM2302" : Adafruit_DHT.AM2302,
+    temperatureSensorsDict = {
                               "DS1822" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS1822,
-                              "DS1825" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS1825,
                               "DS18B20" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS18B20,
-                              "DS18S20" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS18S20,
-                              "DS28EA00" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS28EA00,
-                              "MAX31850K" : w1thermsensor.W1ThermSensor.THERM_SENSOR_MAX31850K}
-except:
+                              "DS18S20" : w1thermsensor.W1ThermSensor.THERM_SENSOR_DS18S20}
+except Exception as e:
+    print(str(e))
     temperatureSensorsDict = {"DHT11": 'Adafruit_DHT.DHT11',
                               "DHT22" : 'Adafruit_DHT.DHT22',
                               "AM2302" : 'Adafruit_DHT.AM2302'}
@@ -32,6 +28,7 @@ def getSensorLibraryMapping(sensorName):
         return temperatureSensorsDict[sensorName]
     else:
         print(str(sensorName) + " sensor name does not exist in library mapping.")
+        print(str(temperatureSensorsDict))
         return None
 
 

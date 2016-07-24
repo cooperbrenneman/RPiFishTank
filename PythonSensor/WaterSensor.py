@@ -13,7 +13,9 @@ class WaterSensor(Sensor):
         
         os.system('modprobe w1-gpio')
         os.system('modprobe w1-therm')
+        print("test1")
         sensorObj = TemperatureSensors.getSensorLibraryMapping(self.sensorName)
+        print(self.sensorName)
         self.sensor = w1thermsensor.W1ThermSensor(sensorObj,self.deviceId)
 
     def read(self):
