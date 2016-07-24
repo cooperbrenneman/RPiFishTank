@@ -12,6 +12,7 @@ from iothub_client import *
 from iothub_client_args import *
 
 from RandomSensor import RandomSensor
+from WaterSensor import WaterSensor
 
 import json
 
@@ -115,7 +116,8 @@ def main(connection_string, protocol):
             iothub_client.__version__)
     
     hub_client = HubManager(connection_string, protocol)
-    sensor = RandomSensor()
+    #sensor = RandomSensor()
+	sensor = WaterSensor("DS18B20", "00152213a7ee")
     
     consumer = IoTHubConsumer(hub_client)
     producer = SensorProducer(sensor)
