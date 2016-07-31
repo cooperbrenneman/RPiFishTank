@@ -38,7 +38,7 @@ received_count = 0
 
 # String containing Hostname, Device Id & Device Key in the format:
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-connection_string = "HostName=aqengine.azure-devices.net;DeviceId=kellsdesktop;SharedAccessKey=q8bcqq9BgnjOf5bdTVFjP7MX/oV0RrALTqai6qQtkHI="
+connection_string = "HostName=aqengine.azure-devices.net;DeviceId=raspi;SharedAccessKey=I5Qfa/ZPbZRGjSsEmazrv6N8MGY6DKoURTYy59JjCiE="
 
 # Queue(N), N represents the message buffer.  
 ## A higher buffer, means the sensor can continue to operate for longer if the event consumer falles behind.
@@ -66,13 +66,15 @@ class SensorProducer(Thread):
             message = self.sensor.read()
             
             message["queue_size"] = queue.qsize()+1
+            message["type"] = "Reading"
+            message["message"] = "Success."
             
             queue.put(message)
             print "Produced", json.dumps(message)
             
-            numItems -= 1
+            #numItems -= 1
             
-            time.sleep(random.random())
+            time.sleep(1)
 
 
 class IoTHubConsumer(Thread):
@@ -106,7 +108,7 @@ class IoTHubConsumer(Thread):
             except KeyboardInterrupt:
                 print("IoTHubClient sample stopped")
             
-            time.sleep(random.random())
+            time.sleep(.5)
 
 def main(connection_string, protocol):
     
