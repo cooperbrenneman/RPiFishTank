@@ -27,8 +27,8 @@ def main(connection_string, protocol):
             iothub_client.__version__)
     
     hub_client = HubManager(connection_string, protocol)
-    sensor = RandomSensor()
-    #sensor = WaterSensor("DS18B20", "00152213a7ee") // Only run this on the raspberry PI
+    #sensor = RandomSensor()
+    sensor = WaterSensor("DS18B20", "00152213a7ee") // Only run this on the raspberry PI
     
     consumer = IoTHubConsumer(hub_client)
     producer = SensorProducer(sensor)

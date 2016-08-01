@@ -30,6 +30,9 @@
     <Compile Include="RaspberryPi3PINs.py" />
     <Compile Include="sensor.py" />
     <Compile Include="SensorClass.py" />
+    <Compile Include="SensorThreadLayer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TemperatureSensors.py" />
     <Compile Include="WaterSensor.py" />
     <Compile Include="Windows\iothub_client_args.py" />
