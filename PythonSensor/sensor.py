@@ -25,16 +25,8 @@ import json
 timeout = 241000
 minimum_polling_time = 9
 
-# messageTimeout - the maximum time in milliseconds until a message times out.
-# The timeout period starts at IoTHubClient.send_event_async. 
-# By default, messages do not expire.
-message_timeout = 10000
-
-receive_context = 0
-avg_wind_speed = 10.0
-message_count = 5
-received_count = 0
-
+# Turns on verbose messaging
+debug = False
 
 # String containing Hostname, Device Id & Device Key in the format:
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
@@ -45,6 +37,17 @@ connection_string = "HostName=aqengine.azure-devices.net;DeviceId=raspi;SharedAc
 ## If the buffer fills up, data loss will occur.
 queue = Queue(1000)
 numItems = 10
+
+class WatcherThread(Thread):
+
+    def __init__(self, sensor):
+        Thread.__init__(self)
+
+    def run(self):
+        print "Running..."
+
+        global debug
+
 
 
 # Sensor will continually write data to the Queue as it becomes available
@@ -57,11 +60,8 @@ class SensorProducer(Thread):
     
     def run(self):
         nums = range(5)
-        global queue, numItems
-        # For temperature and humidity sensor
-        #sensorTest = SensorClass.Sensor('test','AM2302',4)
-        # For water temperature sensor
-        #waterSensor = WaterSensorClass.WaterSensor("DS18B20", "00152213a7ee")
+        global queue, numItems, debug
+
         while numItems > 0:
             message = self.sensor.read()
             
@@ -70,9 +70,9 @@ class SensorProducer(Thread):
             message["message"] = "Success."
             
             queue.put(message)
-            print "Produced", json.dumps(message)
-            
-            #numItems -= 1
+
+            if debug:
+                print "Produced", json.dumps(message)
             
             time.sleep(1)
 
@@ -85,19 +85,22 @@ class IoTHubConsumer(Thread):
         self.message_count = 0
         self.hub_client = hub_client
         
-        print(
-            "Starting the IoT Hub Python sample using protocol %s..." %
-            self.hub_client.client_protocol)
+        if debug:
+            print(
+                "Starting the IoT Hub Python sample using protocol %s..." %
+                self.hub_client.client_protocol)
     
     def run(self):
-        global queue, numItems
+        global queue, numItems, debug
+
         while numItems > 0:
             message = queue.get()
             queue.task_done()
             
             message = json.dumps(message)
             
-            print "Consumed", message
+            if debug:
+                print "Consumed", message
             
             try:
                 self.hub_client.send_event(message, {}, self.message_count)
