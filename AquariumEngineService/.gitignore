@@ -101,3 +101,17 @@ _ReSharper*/
 # NCrunch
 
 *ncrunch*
+
+
+
+# Dependency directories
+
+node_modules
+bower_components
+jspm_packages
+typings
+
+# Typescript
+*.js.map
+*/app/*/*.js
+*/app/*.js
